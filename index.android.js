@@ -13,28 +13,53 @@ import {
   StatusBar,
   ToolbarAndroid,
   ViewPagerAndroid,
-  Picker
+  Picker,
+  TouchableHighlight,
+  Modal,
+  ToastAndroid,
+  Dimensions
 } from 'react-native';
 
 import { Tab, TabLayout } from 'react-native-android-tablayout';
 import Icon from 'react-native-vector-icons/Ionicons';
 var viewpager;
+var {height, width} = Dimensions.get('window');
 class CatatanStokBarang extends Component {
   constructor(props) {
     super(props);
   
     this.state = {
-      pagePosition: 0
+      pagePosition: 0,
+      modalVisible: false,
+      selectedMenu: "Pakaian"
     };
   }
+
+  _screenWidth(){
+    return width;
+  }
+
+
   render() {
+    // ToastAndroid.show(height + " " + width, ToastAndroid.LONG);
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor="#0288d1" />
-        <ToolbarAndroid style={styles.toolbar} 
-          title='Catatan Stok Barang'
-          titleColor='white'>
-        </ToolbarAndroid>
+        <View style={styles.toolbar} >
+          <Text style={styles.toolbarTitle}>Catatan Stok </Text>
+          <TouchableHighlight
+            onPress={this._setModalVisible.bind(this, true)}
+            style={{borderRadius: 10, marginLeft: 5}}
+            >
+            <View style={{backgroundColor: '#0288d1', paddingVertical: 5, paddingHorizontal: 10, borderRadius: 10}}>
+              <Text style={{color: 'white', fontSize: 20, fontWeight: 'bold'}}>
+                {this.state.selectedMenu} &nbsp;
+                <Icon name="md-arrow-dropdown" size={19}/>
+              </Text>
+
+            </View>
+          </TouchableHighlight>
+        </View>
         <View style={styles.divider} />
         <TabLayout style={{borderWidth: 5, borderColor: 'red', backgroundColor:'#eeeeee'}}
           selectedTabIndicatorColor='#03a9f4'
@@ -91,6 +116,48 @@ class CatatanStokBarang extends Component {
             </Text>
           </View>
         </ViewPagerAndroid>
+        <Modal transparent={true}
+          animationType='slide'
+          visible={this.state.modalVisible}
+          onRequestClose={() => {this._setModalVisible(false)}}>
+          <View style={{backgroundColor: 'rgba(0,0,0,0.5)', flex: 1, alignItems: 'flex-end',flexDirection: 'row'}}>
+            <View style={{ flex: 1 , padding: 10}}>
+              <TouchableHighlight
+                underlayColor='lightgray'
+                style={{backgroundColor: 'white', padding: 10, borderRadius: 10, marginVertical: 5}}
+                onPress={this._setSelectedMenu.bind(this, "Pakaian")}>
+                  <Text style={{textAlign: 'center', fontSize: 20}}>
+                    Pakaian
+                  </Text>
+              </TouchableHighlight>
+              <TouchableHighlight
+                underlayColor='lightgray'
+                style={{backgroundColor: 'white', padding: 10, borderRadius: 10, marginVertical: 5}}
+                onPress={this._setSelectedMenu.bind(this, "Celana")}>
+                  <Text style={{textAlign: 'center', fontSize: 20}}>
+                    Celana
+                  </Text>
+              </TouchableHighlight>
+              <TouchableHighlight
+                underlayColor='lightgray'
+                style={{backgroundColor: 'white', padding: 10, borderRadius: 10, marginVertical: 5}}
+                onPress={this._setSelectedMenu.bind(this, "Rok")}>
+                  <Text style={{textAlign: 'center', fontSize: 20}}>
+                    Rok
+                  </Text>
+              </TouchableHighlight>
+              <View style={[styles.divider,{marginVertical: 5}]} />
+              <TouchableHighlight
+                underlayColor='lightgray'
+                style={{backgroundColor: 'white', padding: 10, borderRadius: 10, marginVertical: 5}}
+                onPress={this._setModalVisible.bind(this, false)}>
+                  <Text style={{color: 'red', textAlign: 'center', fontSize: 20}}>
+                    Cancel
+                  </Text>
+              </TouchableHighlight>
+            </View>
+          </View>
+        </Modal>
       </View>
     );
   }
@@ -99,6 +166,15 @@ class CatatanStokBarang extends Component {
     const pagePosition = e.nativeEvent.position;
     this.setState({pagePosition});
     this.viewpager.setPage(pagePosition);
+  }
+
+  _setModalVisible(visible) {
+    this.setState({modalVisible: visible});
+  }
+
+  _setSelectedMenu(item){
+    this.setState({selectedMenu: item});
+    this._setModalVisible(false);
   }
 }
 
@@ -119,12 +195,23 @@ const styles = StyleSheet.create({
   },
   toolbar:{
     height: 56,
-    backgroundColor: '#03a9f4'
+    backgroundColor: '#03a9f4',
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingHorizontal: 15,
+  },
+  toolbarTitle: {
+    fontSize: 20,
+    color: 'white',
+    fontWeight: 'bold'
   },
   divider:{
     height: 1.5,
     opacity: 0.5,
     backgroundColor: 'lightgray'
+  },
+  modal: {
+
   }
 });
 
